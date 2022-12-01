@@ -1,10 +1,5 @@
-##Baixa habilitações
-library(xlsx)
-library(readxl)
-library(rvest)
-library(xml2)
-library(tidyverse)
-library(data.table)
+##Baixa habilitações - caso não haja acesso a BDs internas do MS
+
 
 pega_hab <- function(tipo = "habilitações") {
 
@@ -33,7 +28,7 @@ px_tab <- function(vinculo){
   vinculo <- get(vinculo)
   hab_ref <- vinculo%>%
     html_elements(xpath="//table[contains(@colspan,2)]/tr/td/p/font[2]")%>%
-    gsub(pattern=".*-(.*)-[^-]*",replacement = "\\1")
+    gsub(pattern=paste0("[^\\-]*- (.*)- (.*)</font>"),replacement = "\\1- \\2")
   print("ref_hab completo")
 
   a <- vinculo%>%html_element(xpath="//table[2]")%>%html_table(header =T)
@@ -60,13 +55,17 @@ links_div <- split(links_habs,rep(1:15,each=13)[1:length(links_habs)])
 
 tabela_hab <- rbindlist(lapply(ls(pattern = "tabh_[0-9]"),px_tab))
 
-write.xlsx(tabela_hab,paste0("dados/",Sys.Date(),"-habilitações capturadas do site-",tipo,".xlsx"))
+tabela_hab%<>%separate(hab_ref,into = c("hab_ref","hab_desc"),sep = "- ",extra = "merge")
+
+write.xlsx(tabela_hab,paste0("dados/",Sys.Date()-3,"-habilitações capturadas do site-",tipo,".xlsx"))
 
 tabela_hab
 
 }
 
 tabela_hab <- pega_hab()
+
+rm(list=ls(pattern="tabh_*"))
 
 tabela_inc <- pega_hab("incentivos")
 
@@ -78,15 +77,18 @@ tabela_inc$tipo <- "I"
 
 hab_e_inc <- rbind(tabela_hab,tabela_inc)
 
-##Tabela anterior
+#Formatação
+hab_e_inc$CNES <- as.numeric(hab_e_inc$CNES)
 
-tab2020031a <- read_xlsx("dados/arquivados - histórico/primeira tentativa/Hab_Novo_tot.xlsx", sheet = 1)
+hab_e_inc$CompetênciaInicial <- as.Date(paste0("15/",hab_e_inc$CompetênciaInicial),"%d/%m/%Y")
 
-#tab_bd_orig <- read_xlsx("dados/banco de dados originais/habiltações_total_2020_03_BD origem.xlsx")
+hab_e_inc$CompetênciaFinal <- as.Date(paste0("15/",hab_e_inc$CompetênciaInicial),"%d/%m/%Y")
 
-#tba_estab_com_intern <- read_xlsx("dados/estab com internação/BD estabelecimento com leitos de internação_20-11-2020.xlsx")
+hab_e_inc$hab_ref <- as.numeric(hab_e_inc$hab_ref)
 
 
-hab_sep <- list.files(path = "dados/estab com internação/",pattern="habilta.*",full.names = T)
+##Harmonização com nomes internos ao BD CNES RL_ESTAB_SIPAC
+names(hab_e_inc)[c(4:6,9,11)] <-
+  c("CMTP_INICIO","CMTP_FIM","NU_LEITOS","COD_SUB_GRUPO_HABILITACAO","TP_HABILITACAO")
 
-tb_hab_tot <- data.table::rbindlist(lapply(hab_sep,read_xlsx,sheet = "BD origem"))
+saveRDS(hab_e_inc,paste0("dados/",Sys.Date(),"-hab_e_inc.rds"))

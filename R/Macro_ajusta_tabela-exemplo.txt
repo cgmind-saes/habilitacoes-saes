@@ -1,0 +1,19 @@
+#Adaptado de https://datascienceplus.com/r-markdown-how-to-format-tables-and-figures-in-docx-files/
+
+#https://learn.microsoft.com/en-us/dotnet/api/microsoft.office.interop.word.wdrowheightrule?view=word-pia
+
+
+
+Sub estreitatabelas()
+ Dim tbl As Table
+    For Each tbl In ActiveDocument.Tables
+         tbl.AutoFormat wdTableFormatSimple1
+         tbl.PreferredWidth = "420"
+         tbl.Range.Font.Name = "Arial"
+         tbl.Range.Font.Size = 8
+         tbl.Range.ParagraphFormat.SpaceBefore = 6
+         tbl.Range.ParagraphFormat.SpaceAfter = 10
+         tbl.Range.Cells.SetHeight RowHeight:=18, HeightRule:=wdRowHeightAtLeast
+
+    Next
+End Sub

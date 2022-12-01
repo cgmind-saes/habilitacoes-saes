@@ -1,0 +1,249 @@
+---
+title: "Distribuição dos estabelecimentos de saúde da atenção especializada à saúde no Brasil vinculados ao SUS"   
+subtitle: "estabelecimentos com leitos de internação"
+author: "Kathleen S. O. Machado, Rodrigo E. S. Borges"
+date: "`r  format.Date(Sys.Date()-10,'%d de %B de %Y')`"
+abstract: "O presente documento apresenta estudo sobre a distribuição dos estabelecimentos de saúde com leitos de internação da atenção especializada à saúde no Brasil.  Foram considerados como estabelecimentos com leito de internação os hospitais gerais, hospitais especializados, unidades mistas, prontos socorro especializados e prontos-socorros gerais, assim tipificados no Sistema Nacional de Cadastro de Estabelecimentos de Saúde em `r  format.Date(Sys.Date()-60,'%B de %Y')`."
+bibliography: [bib/references.bib, bib/packages.bib]  
+csl: bib/ibict-abnt.csl                         
+output: 
+  cgmindmodelos::word_doc:
+    toc: false
+    language: "en"  
+    font: "Helvetica"    
+editor_options: 
+  markdown: 
+    wrap: sentence
+---
+
+```{r setup, include = FALSE}
+# settings --> keep this chunk as it is!
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, 
+  warning = FALSE, error = FALSE, cache = TRUE,
+  fig.path='figs/', cache.path = 'cache/')
+
+
+```
+
+```{r load-packages, include = FALSE}
+# Load all your packages that you need later
+
+source("../requ.R")
+source("../R/paletas.R")
+##funções
+
+source("../R/utils.R")
+
+#Já rodado, necessário apenas paralelamente/uma vez
+
+```
+
+```{r generate-package-refs, include=FALSE}
+# Automatically create a bib database for R packages used above
+knitr::write_bib(
+  x = c(.packages(), 'bookdown', 'rmarkdown', 
+    # Add here now all packages that are loaded above:
+    'knitr'), 
+  file = 'bib/packages.bib')
+```
+
+```{r include = F}
+
+load("dados.RData")
+```
+
+# RESUMO EXECUTIVO
+
+O presente documento apresenta estudo sobre Distribuição dos estabelecimentos de saúde da atenção especializada à saúde no Brasil: estabelecimentos com leitos de internação.
+Foram considerados como estabelecimentos com leito de internação os hospitais gerais, hospitais especializados, unidades mistas, prontos socorro especializados e prontos socorro gerais, assim tipificados no Sistema Nacional de Cadastro de Estabelecimentos de Saúde em `r format(Sys.Date()-7, '%B de %Y')`.
+
+# INTRODUÇÃO
+
+A conformação e inserção de redes assistenciais no sistema de saúde estabelece a medida da garantia da integralidade da atenção à saúde.
+Operacionalmente, espera-se que os níveis de atenção disponham de cooperação e coordenação com uma gestão eficiente dos recursos de forma a atender tanto as necessidades individuais como coletivas em saúde; e ainda que a oferta de serviços de saúde não seja considerada como um dos principais determinantes da melhoria de saúde, a disposição adequada desses serviços e a garantia do acesso universal da população aos equipamentos de saúde em qualidade e cobertura se configuram como um relevante indicador de bem-estar social[@borrell2006].
+Nessa perspectiva, a Coordenação-Geral de Monitoramento de Indicadores de Serviços na Atenção Especializada à Saúde (CGMIND), considerando suas competências regimentais, propôs-se a identificar a capacidade instalada da média e alta complexidade de saúde.
+Para este fim, a capacidade instalada foi considerada como um conjunto de instituições, públicas e privadas, que ofertam e produzem serviços de saúde ao SUS.
+Assim, em uma primeira etapa, busca-se dimensionar, no território nacional, os estabelecimentos de saúde que estão vinculados ao SUS.
+Para lograr tal feito, optou-se por identificar quais seriam os estabelecimentos que possuíam habilitações de interesse da atenção especializada, compreendendo que uma habilitação declara a **capacidade do estabelecimento de saúde em desenvolver funções específicas exigidas para a realização de determinado procedimento**.
+Essa definição pode não abarcar completamente a compreensão de como o termo "habilitação" vem sendo empregado nas diferentes políticas e programas do Ministério da Saúde.
+A observar que o termo inicialmente empregado pela Norma Operacional Básica -- 1996 assim compreendia habilitação:
+
+>  *A habilitação dos municípios às diferentes condições de gestão significa a declaração dos compromissos assumidos por parte do gestor perante os outros gestores e perante a população sob sua responsabilidade.*
+
+De forma sintética podemos pontuar os seguintes conceitos que vêm sendo atribuídos à palavra “habilitação” nos normativos das políticas e programas no âmbito da SAES:
+ - Habilitação para recebimento de incentivo financeiro: que dá o direito ao estabelecimento ou gestor para o recebimento de recursos para execução de uma determinada atividade ou para infraestrutura ou ainda ao cumprir requisitos de qualidade. Exemplo: Serviço de Referência para Diagnóstico e Tratamento de Lesões Precursoras do Câncer do Colo de Útero (SRC), o Serviço de Referência para Diagnóstico de Câncer de Mama (SDM) e Laboratório de citopatologia (Qualicito), Unidade de Cuidados Prolongados (UCP);
+ - Habilitação como mecanismo de reconhecimento de um serviço ou de um estabelecimento para desempenho de atividade no SUS. Exemplos: mamografia móvel, Centros de Assistência de Alta Complexidade em Oncologia (CACON) e leitos de Unidade de Terapia Intensiva (UTI); e
+ - No âmbito da gestão orçamentária, as habilitações subdividem-se entre as que são destinadas para: custeio do serviço, seja para pagamento por procedimento ou custeio global; para custeio da equipe; para investimento e para incentivo.
+
+A Portaria SAS/MS nº 414, de 11 de agosto de 2005, que inclui no Sistema do Cadastro Nacional de Saúde – SCNES - as Tabelas de Habilitações de Serviços e de Regras Contratuais define habilitação de serviços como **“o ato do gestor municipal, estadual ou federal autorizar um estabelecimento de saúde já credenciado do SUS a realizar procedimentos constantes das tabelas do SUS, vinculados a normalizações específicas”**.
+
+
+Esta última será a compreensão aplicada ao estudo DISTRIBUIÇÃO DOS ESTABELECIMENTOS DE SAÚDE DA ATENÇÃO ESPECIALIZADA À SAÚDE NO BRASIL VINCULADOS AO SUS. No intuito de se verificar a distribuição dos estabelecimentos da atenção especializada, ter como ponto de partida as habilitações existentes nos estabelecimentos implica dimensionar, ainda que parcialmente, a capacidade da média e alta complexidade. Parcialmente porque uma análise da capacidade instalada deve considerar não somente o tipo de estabelecimentos, que tipicamente na atenção especializada são os hospitais, laboratórios, clinicas de especialidades, etc; mas também considerar as características inerentes de cada tipo de estabelecimento bem como a capacidade de resposta em relação a doenças específicas. Além disso, importa considerar que muitos estabelecimentos de saúde são contratualizados pelos gestores locais e não habilitados pelo Ministério da Saúde. _Esse estudo, portanto, restringir-se-á aos aspectos quantitativos da capacidade instalada em uma única dimensão: tipos de estabelecimentos com habilitações vigentes de interesse da atenção especializada à saúde_.
+
+A Tabela de Habilitações e a Tabela de Incentivos do SUS é constituída por um total de `r paste(sum(modalidades_h$modalidade),"modalidades:",modalidades_h$modalidades[1],"habilitações e",modalidades_h$modalidades[2],"incentivos")`. Desse universo identificou-se que `r mod_iae$n[1]` habilitações e `r mod_iae$n[2]` incentivos são de interesse da atenção especializada à saúde, conforme apresentado no Anexo 01 – Habilitações e Incentivos da Atenção Especializada. Para identificação dos estabelecimentos e as respectivas habilitações e incentivos a eles vinculados utilizou-se o Sistema Nacional de Cadastro de Estabelecimentos de Saúde (SCNES).
+
+O Cadastro Nacional dos Estabelecimentos de Saúde (CNES) consiste de uma base que contém dados da totalidade dos estabelecimentos de saúde brasileiros. A inclusão de um estabelecimento no CNES  e as informações nele contidas, por meio do preenchimento de diversos formulários específicos, são realizados pelo próprio estabelecimento. Uma vez cadastrado, o Ministério da Saúde gera um código numérico para cada estabelecimento. São os gestores responsáveis por cada instituição responsáveis por atualizar, solicitar alterações ou até mesmo efetuar sua exclusão da base do CNES (ROCHA, 2018).
+
+A presente nota técnica apresenta a distribuição dos estabelecimentos de média e alta complexidade em saúde com leitos de internação.
+
+# METODOLOGIA
+Inicialmente foi criado um banco de dados, a partir do Sistema Nacional de Cadastro de Estabelecimentos de Saúde (SCNES), com a identificação de todos os estabelecimentos que possuíam habilitações vigentes na competência `r datacnes` contendo as seguintes identificações: tipo de estabelecimento, natureza jurídica, UF (nível estadual), número do cadastro, nome do estabelecimento e habilitações e incentivos vigentes (atuais).
+Considerou-se como estabelecimentos que possuem leitos de internação aqueles que possuem atendimento a pacientes que necessitam de assistência direta programada por período superior a 24 horas (pacientes internos), conforme os critérios e parâmetros para o planejamento e programação de ações e serviços de saúde no âmbito do SUS (Portaria de Consolidação GM/MS nº 01/2017): hospital geral, hospital especializado, pronto socorro geral, pronto socorro especializado e unidade mista.
+Para análise da correspondência foram consideradas as informações disponíveis no SCNES, em seu sítio eletrônico http://cnes.datasus.gov.br/ , no que diz respeito aos normativos que criam as habilitações ou incentivos. O conteúdo de cada normativo mencionado no CNES do estabelecimento foi pesquisado utilizando-se preferencialmente as informações disponibilizadas pelo Sistema de Legislação da Saúde
+(SLEGIS) - https://saudelegis.saude.gov.br/. Caso a informação não fosse disponível nessa ferramenta consultou-se buscadores na internet e o Diário Oficial da União (DOU).
+Cumpre esclarecer as definições adotadas nesta Nota Técnica para os estabelecimentos com leitos de internação:
+ I. Hospital Geral: hospital destinado à prestação de atendimento nas especialidades básicas, por especialistas e/ou outras especialidades médicas. Pode dispor de serviço de Urgência/Emergência. Deve dispor também de SADT (Serviço de Apoio de Diagnose e Terapia) de média complexidade;
+ II. Hospital Especializado: hospital destinado à prestação de assistência à saúde em uma única especialidade/área. Pode dispor de serviço de Urgência/Emergência e SADT. Podendo ter ou não Alta Complexidade. Geralmente de referência regional, macro regional ou estadual;
+ III. Pronto Socorro Geral: unidade destinada à prestação de assistência a pacientes com ou sem risco de vida, cujos agravos necessitam de atendimento imediato. Pode ter ou não internação. Deve ter as instalações e serviços relacionados à urgência e emergência;
+ IV. Pronto Socorro Especializado: unidade destinada à prestação de assistência em uma ou mais especialidades, a pacientes com ou sem risco de vida, cujos agravos necessitam de atendimento imediato. Deve ter as instalações e serviços relacionados à urgência e emergência;
+ V. Unidade Mista: unidade de saúde básica destinada à prestação de atendimento em atenção básica e integral à saúde, de forma programada ou não, nas especialidades básicas, podendo oferecer assistência odontológica e de outros profissionais, com unidade de internação e sob administração única. A assistência médica deve ser permanente e prestada por médico especialista ou generalista. Pode dispor de urgência/emergência e SADT básico ou de ro na. Uso restrito para estabelecimentos da administração pública.
+ 
+
+# ANÁLISE
+
+Em `r datacnes`, o SCNES registrava um total de `r fni(total_estabs)` estabelecimentos de saúde em todo território nacional, desses `r fni(tot_chi)` (`r fnx(100*tot_chi/total_estabs)`%) possuíam alguma habilitação ou incentivo vigente pelo Ministério da Saúde: `r fnx(hab_por_nat[1,3])`% da administração pública, `r fnx(hab_por_nat[2,3])`% entidades empresariais e `r fnx(hab_por_nat[3,3])`% entidades sem fins lucrativos.
+Considerando-se somente os estabelecimentos que possuem habilitação ou incentivo de interesse da atenção especializada, listados no Anexo I, este universo se reduz para `r fni(tehab)` estabelecimentos: `r fnx(prop_iae[1,3])`% da administração pública, `r fnx(prop_iae[2,3])`% entidades empresariais e `r fnx(prop_iae[3,3])`% entidades sem fins lucrativos.
+Dentro deste grupo, `r fni(t1tab[8,8])` (`r fnx(100*as.numeric(t1tab[8,8])/tot_chi)`%) estabelecimentos compõem o grupo com leitos de internação.
+O grupo de estabelecimentos com leitos de internação responde por `r fnx(100*as.numeric(t1tab[8,9])/nrow(hi_iae))`% das habilitações e incentivos vigentes de interesse da atenção especializada (`r fni(nrow(hi_iae))`).
+A Tabela 01 detalha, conforme natureza jurídica, a quantidade de estabelecimentos e de habilitações/incentivos vigentes e o Gráfico 01 detalha a distribuição regional conforme natureza jurídica desses estabelecimentos.[@dasilvabarbosa2021]
+
+*Tabela 01* - Quantidade de estabelecimentos e habilitações/incentivos vigentes, por tipo de estabelecimento com leitos de internação, segundo a natureza jurídica - Brasil - `r datacnes`
+
+```{r tabela1}
+
+t1tab
+```
+
+Observa-se que entre os estabelecimentos que possuem leitos de internação: `r fnx(prop_iae$percentual[3])`% são entidades sem fins lucrativos, `r fnx(prop_iae$percentual[1])`% estabelecimentos da administração pública e `r fnx(prop_iae$percentual[2])`% entidades empresariais.
+*Gráfico 01* - Quantidade de estabelecimento de saúde com leitos de internação e habilitação/incentivo de interesse da atenção especializada, segundo as grandes regiões e por esfera administrativa - Brasil - `r datacnes`
+
+```{r echo=F, fig.width=9}
+piaergraf
+```
+Elaboração: CGMIND/SAES
+
+As entidades sem fins lucrativos respondem por `r fnx(100*(tab1[[7]]/tab1[[9]])[6])`% das habilitações e incentivos vigentes enquanto a administração pública responde por `r fnx(100*(tab1[[3]]/tab1[[9]])[6])`%.
+As habilitações e incentivos estão concentrados nos Hospitais Gerais independente da natureza jurídica.
+Chama atenção a existência de estabelecimentos do tipo unidade mista atribuídos para entidades empresariais e entidades sem fins lucrativos considerando a limitação de tal classificação para a administração pública.
+O Mapa 01 reflete a concentração dos estabelecimentos com leitos de internação na região sul e sudeste, correspondente proporcionalmente à concentração de habilitações.
+
+*Mapa 01* - Distribuição dos estabelecimentos com leitos de internação e concentração de habilitações por estado - Brasil - `r datacnes`
+
+```{r mapa1,echo=F, fig.width = 9,height = 15}
+mapa1
+```
+Elaboração: CGMIND/SAES
+
+Do total de `r fni(tab1[6,8])` estabelecimentos com leitos de internação, observou-se que `r fnx(100*sum(tab2[[2]])/sum(tab2[-1]))`% (n=`r fni(sum(tab2[[2]]))`) desses estabelecimentos detém `r fnx(abc_prop[1,]$prop_hi)`% das habilitações (n=`r fni(abc_prop[1,]$qtde_hi)`), `r fnx(100*sum(tab2[[3]])/sum(tab2[-1]))`%  dos estabelecimentos (n=`r fni(sum(tab2[[3]]))`) concentra `r fnx(abc_prop[2,]$prop_hi)`% das habilitações  (n=`r fni(abc_prop[2,]$qtde_hi)`) e `r fnx(100*sum(tab2[[4]])/sum(tab2[-1]))`%  dos estabelecimentos (n=`r fni(sum(tab2[[4]]))`) detém `r fnx(abc_prop[3,]$prop_hi)`% das habilitações (n=`r fni(abc_prop[3,]$qtde_hi)`).
+O primeiro grupo de hospitais, doravante denominados classe A, possui um máximo de `r fni(max((filter(hab_nat_leito,classe == "Classe A"))$habs_incs))` habilitações/incentivos e mínimo de `r fni(min((filter(hab_nat_leito,classe == "Classe A"))$habs_incs))` por estabelecimento; no segundo grupo (a seguir, classe B), as habilitações/incentivos por estabelecimento variam de `r fni(max((filter(hab_nat_leito,classe == "Classe B"))$habs_incs))` a `r fni(min((filter(hab_nat_leito,classe == "Classe B"))$habs_incs))`  e, no terceiro grupo (classe C), cada estabelecimento possui `r fni(max((filter(hab_nat_leito,classe == "Classe C"))$habs_incs))` ou menos habilitações/incentivos, com predominância de menos de `r fni(mean((filter(hab_nat_leito,classe == "Classe C"))$habs_incs)+1)` por estabelecimento com leitos de internação.
+
+*Gráfico 02* - Gráfico síntese da quantidade e proporção de estabelecimentos com leitos de internação, variação de habilitações e incentivos por grupo e proporção de habilitações/incentivos - Brasil - `r datacnes`
+```{r grafico2}
+curva_abc
+
+```
+A Tabela 02 apresenta os tipos de estabelecimentos com leitos de internação conforme a classificação.
+
+*Tabela 02* - Quantidade de estabelecimentos com leitos de internação, segundo tipo de unidade e classe - Brasil - `r datacnes`
+
+```{r tabela2}
+kable(tab2)
+
+```
+
+Considerando os resultados acima descritos, uma possibilidade de qualificação do monitoramento dos serviços na atenção especializada é aprofundar a análise da classe A, estabelecendo-a como grupo inicial e prioritário para avaliação e monitoramento considerando as políticas e programas desenvolvidos pela SAES.
+Outra importante análise a ser realizada refere-se ao perfil de habilitação desses estabelecimentos, conforme os grupos acima agregados.
+Não menos importante, cabe observar que a classe A predomina nas regiões Sul e Sudeste do país; as classes B e C predominam nas regiões Sudeste e Nordeste , conforme Mapa 02 abaixo.
+
+*Mapa 02* - Distribuição dos estabelecimentos com leitos de internação e proporção das classes por estado - Brasil - `r datacnes`
+
+```{r mapa2, fig.width = 9,height = 15 }
+mapa2
+```
+
+Apresenta-se a seguir tabelas complementares de análise com detalhamento dos dados por unidades da federação.
+
+*Tabela 03* - Quantidade de estabelecimento de saúde com leitos de internação, por unidade federativa e classe - Brasil - `r datacnes`
+
+```{r tabela3}
+kable(tab3)
+
+```
+
+*Tabela 04* - Quantidade de estabelecimentos com leitos de internação por região, unidade federativa e tipo de unidade - Brasil - `r datacnes`
+
+```{r tabela4}
+kable(tab4)
+```
+
+*Tabela 05* - Quantidade de estabelecimentos com leitos de internação por região, unidade federativa e natureza jurídica - Brasil - `r datacnes`
+
+```{r tabela5}
+kable(tab5)
+
+```
+
+# CONCLUSÃO
+
+A presente Nota técnica apresenta a distribuição dos estabelecimentos de saúde da atenção especializada com leitos de internação e que possuíam habilitações vigentes em `r datacnes`.
+Observa-se que a concentração de habilitações por unidade federativa tende a se conformar proporcionalmente à oferta de estabelecimentos, de tal sorte que as regiões sudeste e sul concentram maior quantidade de estabelecimentos e de habilitações.
+A presente análise permitiu, ainda, delimitar um grupo prioritário para o monitoramento de serviços na atenção especializada, a saber os 314 estabelecimentos identificados na Classe A. Para esse grupo, será realizada análise mais detalhada das características dos estabelecimentos, das habilitações vigentes e assistência prestada.
+
+Todas as análises foram realizadas utilizando o software livre R (version `r paste(R.Version()$major, R.Version()$minor, sep = ".")`) [@R-base].
+Este relatório, incluindo as tabelas foi gerado utilizando os pacotes 'bookdown' (version `r packageVersion("bookdown")`) [@R-bookdown], 'rmarkdown' (version `r packageVersion("rmarkdown")`) [@R-rmarkdown], e 'knitr' (version `r packageVersion("knitr")`) [@R-knitr].
+
+<!-- Quebra de página -->
+
+\newpage
+
+# REFERÊNCIAS NORMATIVAS
+
+## PORTARIAS DE ORIGEM DO GABINETE DO MINISTRO
+
+-   Portaria nº 2.203 de 1996 (revogada). Dispõe sobre a Norma Operacional Básica do SUS 01/96.
+-   Portaria nº 1.892 de 1997. Incorpora a modalidade internação domiciliar ao Sistema Único de Saúde; determina que a modalidade hospital-dia fica ampliada para outros agravos não previstos na atual tabela do SIH/SUS. Diário Oficial da União 1997; 22 dez.
+-   Portaria nº 2.413 de 1998. Inclui na tabela do SIH-SUS os procedimentos anexo, os quais somente poderão ser realizados por hospitais previamente autorizado nos termos desta portaria. Diário Oficial da União 1998; 26 mar.
+-   Portaria GM/MS nº 479 de 1999 (revogada). Cria mecanismos para a implantação dos Sistemas Estaduais de Referência Hospitalar e m Atendimento de Urgências e Emergências. Diário Oficial da União 1999; 16 abr.
+-   Portaria nº 1.091 de 1999 (revogada). Cria e estabelece as normas e critérios de inclusão da Unidade de Cuidados Intermediários Neonatal no SUS. Diário Oficial da União 1999; 26 ago.
+-   Portaria GM/MS nº 44 de 2001 (revogada). Aprova no âmbito do Sistema Único de Saúde a modalidade de assistência - Hospital Dia. Diário Oficial da União 2001; 12 jan.
+-   Portaria GM/MS nº 92 de 2001. Estabelece os procedimentos destinados a remunerar as atividades de busca ativa de doador de órgãos e tecidos, mantendo na Tabele do SIH/SUS os grupos de procedimentos e procedimentos descritos em anexo.
+-   Portaria nº 818 de 2001 (revogada). Cria Mecanismos para a organização e implantação de redes estaduais de assistência à pessoa portadora de deficiência física. Diário Oficial da União 2001; 21 jun.
+-   Portaria nº 793 de 2012 (revogada). Institui a Rede de Cuidados à Pessoa com Deficiência no âmbito do Sistema Único de Saúde. Diário Oficial da União 2012; 25 mai.
+-   Portaria nº 1.786 de 2012. Credencia Municípios a receberem incentivos referentes aos Núcleos de Apoio à Saúde da Família (NASF). Diário Oficial da União 2012; 24 ago.
+-   Portaria nº 2.046 de 2014 . Habilita Laboratórios de Exames Citopatológicos do Colo do Útero. Diário Oficial da União 2014; 15 set.
+-   Portaria nº 2.157 de 2015 (revogada). Altera os art. 8º e 24 da Portaria nº 2.776/GM/MS, de 18 de dezembro de 2014, que aprova diretrizes gerais, amplia e incorpora procedimentos para a Atenção Especializada às Pessoas com Deficiência Auditiva no Sistema Único de Saúde (SUS). Diário Oficial da União 2015; 24 dez.
+-   Portaria de Consolidação nº 01 de 2017. Consolidação das normas sobre os direitos e deveres dos usuários da saúde, a organização e o funcionamento do Sistema Único de Saúde. Diário Oficial da União 2017; 03 out.
+-   Portaria de Consolidação nº 2 de 2017. Consolidação das normas sobre as políticas nacionais de saúde do Sistema Único de Saúde. Diário Oficial da União 2017; 03 out.
+-   Portaria de Consolidação nº 3 de 2017. Consolidação das normas sobre as redes do Sistema Único de Saúde. Diário Oficial da União 2017; 03 out.
+-   Portaria de Consolidação nº 4 de 2017. Consolidação das normas sobre os sistemas e os subsistemas do Sistema Único de Saúde. Diário Oficial da União 2017; 03 out.
+-   Portaria de Consolidação nº 5 de 2017. Consolidação das normas sobre as ações e os serviços de saúde do Sistema Único de Saúde. Diário Oficial da União 2017; 03 out.
+-   Portaria de Consolidação nº 6 de 2017. Consolidação das normas sobre o financiamento e a transferência dos recursos federais para as ações e os serviços de saúde do Sistema Único de Saúde. Diário Oficial da União 2017; 03 out.
+-   Portaria nº 2.663 de 2017. Altera a Portaria de Consolidação nº 6/GM/MS, de 28 de setembro de 2017, para redefinir os critérios para o repasse do Incentivo para a Atenção Especializada aos Povos Indígenas - IAEPI, no âmbito do Sistema Único de Saúde - SUS. Diário Oficial da União 2017; 16 out.
+-   Portaria nº 2.022 de 2017 (revogada). Altera o Cadastro Nacional de Estabelecimentos de Saúde (CNES), no que se refere à metodologia de cadastramento e atualização cadastral, no quesito Tipo de Estabelecimentos de Saúde. Diário Oficial da União 2017; 15 ago.
+
+## PORTARIAS DE ORIGEM DA SECRETARIA DE ATENÇÃO À SAÚDE / SECRETARIA DE ATENÇÃO ESPECIALIZADA À SAÚDE
+
+-   Portaria nº 130 de 1994. Estabelece as diretrizes e normas para implantação do tratamento em Hospital-Dia ao paciente com doença/AIDS conforme Portaria nº 93 de 31 de maio de 1994. Diário Oficial da União 1994; 05 ago.
+-   Portaria nº 48 de 1999. Inclui nos grupos de procedimentos da tabela dos sistemas de informações hospitalares do Sistema Único de Saúde - SIH/SUS, os códigos de procedimentos especificados em anexo. Diário Oficial da União 2001; 05 jun.
+-   Portaria nº 172 de 2001. Aprova, na forma do ANEXO I desta portaria, as normas para cadastramento de laboratórios de contagem de linfócitos T CD4 +/ CD8 + e laboratórios de quantificação de ácido nucleico - carga viral do HIV, no âmbito do Sistema Único de Saúde - SUS. Diário Oficial da União 2001; 05 jun.
+-   Portaria nº 185 de 2001. Altera a descrição dos serviços de códigos 18 e 05 constantes da tabela de serviço do sistema de informações ambulatoriais do sistema único de saúde - SIA/SUS. Diário Oficial da União 2001; 07 jun.
+-   Portaria nº 414 de 2005. Inclui, no Sistema do Cadastro Nacional de Saúde - SCNES, as Tabelas de Habilitações de Serviços e de Regras Contratuais. Diário Oficial da União 2005; 12 ago.
+-   Portaria nº 288 de 2008. Define que as redes estaduais e regionais de atenção em oftalmologia sejam compostas por unidades de atenção especializada em oftalmologia e centros de referência em oftalmologia. Diário Oficial da União 2008; 20 mai.
+-   Portaria nº 340 de 2008. Exclui a classificação 005-medicina nuclear in vivo do serviço 121 - serviço de diagnóstico por imagem, da tabela de serviços/classificações do Sistema de Cadastro Nacional de Estabelecimentos de Saúde - SCNES; serviço que passa a ser composto conforme tabela constante no Anexo I desta portaria e inclui na Tabela de Serviços/Classificações do Sistema de Cadastro Nacional de Estabelecimentos de Saúde - SCNES; o serviço 151- medicina nuclear e suas classificações conforme tabela constante no Anexo II. Diário Oficial da União 2008; 19 jun.
+-   Portaria nº 370 de 2008. Estabelece, na forma do Anexo I desta portaria, o rol de doenças neuromusculares incluídas no programa de assistência ventilatória não invasiva aos portadores de doenças neuromusculares. Diário Oficial da União 2008; 07 jul.
+-   Portaria nº 511 de 2010. Exclui, da tabela de habilitações do Sistema de Cadastro Nacional dos Estabelecimentos de Saúde (SCNES), habilitações relacionadas e inclui habilitações referentes a transplantes. Diário Oficial da União 2010; 28 set.
+-   Portaria nº 920 de 2011. Altera, na tabela de procedimentos, medicamentos, órteses, próteses e materiais especiais do Sistema Único de Saúde (SUS), os atributos referentes ao nome, descrição, quantidade máxima, valor, CID, tipo de financiamento e de atributo complementar para os procedimentos discriminados neste ato. Diário Oficial da União 2011; 16 dez.
+-   Portaria nº 1.228 de 2012. Regulamenta a habilitação para o Programa de Mamografia Móvel, instituído pela Portaria n° 2.304/GM/MS, de 4 de outubro de 2012 e inclui na tabela de Habilitações do Sistema de Cadastro Nacional dos Estabelecimentos de Saúde (SCNES) a habilitação nos seguintes termos: Código: 32.01 - Descrição: Unidade de Mamografia Móvel - Centralizada/Descentralizada: Centralizada. Diário Oficial da União 2012; 31 out.
+-   Portaria nº 492 de 2013. Altera o Serviço Especializado e as habilitações relacionadas à Rede de Cuidados a Pessoa com Deficiência, no Sistema de Cadastro Nacional de Estabelecimentos de Saúde (SCNES). Diário Oficial da União 2013; 02 mai.
+-   Portaria Conjunta nº 01 de 2013. Redefine as regras de cadastramento dos Laboratórios de Saúde Pública no Sistema de Cadastro Nacional de Estabelecimentos de Saúde (SCNES). Diário Oficial da União 2013; 09 set.
+-   Portaria nº 296 de 2013. Estabelece recurso a ser incorporado ao Limite Financeiro de Média e Alta Complexidade do Estado da Bahia e do Município de Capim Grosso (BA), Bloco da Atenção de Média e Alta Complexidade Ambulatorial e Hospitalar (UPA 24h). Diário Oficial da União 2013; 01 mar.
+-   Portaria nº 269 de 2013. Inclui o código 05.06-Oftalmologia - Procedimentos Relacionados ao Glaucoma Tabela de Habilitação do Cadastro Nacional de Estabelecimento de Saúde - SCNES. Diário Oficial da União 2013; 18 mar.
+-   Portaria nº 186 de 2016. Altera tipos, subtipos e definições de estabelecimentos de saúde e cria a possibilidade de cadastramento de Sedes de Operadoras de Planos de Saúde e Sedes de Consórcios Públicos na Área de Saúde no Cadastro Nacional de Estabelecimentos de Saúde (CNES). Diário Oficial da União 2016; 03 mar.
+-   Portaria nº 1.883 de 2018. Define o cadastramento dos estabelecimentos de saúde enquadrados como Central de Abastecimento e de estabelecimentos que realizam Serviço de Imunização no Cadastro Nacional de Estabelecimentos de Saúde (CNES) e inclui no Módulo Básico do CNES o campo Abrangência de Atuação, com intuito de enquadrar o estabelecimento de saúde em sua respectiva instância de atuação. Diário Oficial da União 2018; 24 dez.
+
+
+\newpage
+
+# REFERÊNCIAS
+
+<!-- Todas as referências serão incluídas aqui automaticamente -->
