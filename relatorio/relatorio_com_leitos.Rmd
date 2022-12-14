@@ -61,7 +61,7 @@ A motivação para a análise permanece, qual seja, a de disposição desses ser
 
 A capacidade instalada considerada em pauta, em linha ao estudo anterior, foi a do conjunto de instituições que ofertam e produzem serviços de saúde para o Sistema Único de Saúde (SUS).
 
-Compreende-se que 'uma habilitação declara a **capacidade do estabelecimento de saúde em desenvolver funções específicas exigidas para a realização de determinado procedimento**.'[@machado2020, p.1][^1 Para um repasso de distintas compreensões sobre o termo 'habilitação' usuais no âmbito de programas e políticas do Ministério da Saúde, cf. Machado e Wanderley(2020).] 
+Compreende-se que 'uma habilitação declara a **capacidade do estabelecimento de saúde em desenvolver funções específicas exigidas para a realização de determinado procedimento**.'[@machado2020, p.1]^[Para um repasso de distintas compreensões sobre o termo 'habilitação' usuais no âmbito de programas e políticas do Ministério da Saúde, cf. Machado e Wanderley(2020).] 
 
 Dessa forma, segue-se a compreensão expressa pela Portaria SAS/MS nº 414, de 11 de agosto de 2005 [@brasil2005b], que define habilitação de serviços como **“o ato do gestor municipal, estadual ou federal autorizar um estabelecimento de saúde já credenciado do SUS a realizar procedimentos constantes das tabelas do SUS, vinculados a normalizações específicas”**.
 
