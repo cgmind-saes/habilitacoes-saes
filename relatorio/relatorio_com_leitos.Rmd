@@ -2,15 +2,15 @@
 title: "Distribuição dos estabelecimentos de saúde da atenção especializada à saúde no Brasil vinculados ao SUS"   
 subtitle: "estabelecimentos com leitos de internação"
 author: "Kathleen S. O. Machado, Rodrigo E. S. Borges"
-date: "`r  format.Date(Sys.Date()-10,'%d de %B de %Y')`"
-abstract: "O presente documento apresenta estudo sobre a distribuição dos estabelecimentos de saúde com leitos de internação da atenção especializada à saúde no Brasil.  Foram considerados como estabelecimentos com leito de internação os hospitais gerais, hospitais especializados, unidades mistas, prontos socorro especializados e prontos-socorros gerais, assim tipificados no Sistema Nacional de Cadastro de Estabelecimentos de Saúde em `r  format.Date(Sys.Date()-60,'%B de %Y')`."
+date: "`r  format.Date(Sys.Date()-1,'%d de %B de %Y')`"
+abstract: "O escrito apresenta atualização do estudo sobre a distribuição dos estabelecimentos de saúde com leitos de internação da atenção especializada à saúde no Brasil, realizado por primeira vez ao final de 2020. Concentra-se em oferecer recorte único sobre a capacidade instalada  na rede de atenção especializada à saúde para o Sistema Único de Saúde, ao classificar estabelecimentos quanto a habilitações e incentivos de interesse da atenção especializada à saúde, natureza jurídica, região e número de leitos habilitados ou com incentivo. Foram considerados os estabelecimentos com leito de internação com ênfase nos hospitais gerais, hospitais especializados, unidades mistas, prontos socorro especializados e prontos-socorros gerais, assim tipificados no Sistema Nacional de Cadastro de Estabelecimentos de Saúde em `r  format.Date(Sys.Date(),'%B de %Y')`."
 bibliography: [bib/references.bib, bib/packages.bib]  
 csl: bib/ibict-abnt.csl                         
 output: 
   cgmindmodelos::word_doc:
     toc: false
-    language: "en"  
-    font: "Helvetica"    
+    language: "pt"  
+    font: "Lato"    
 editor_options: 
   markdown: 
     wrap: sentence
@@ -48,61 +48,62 @@ knitr::write_bib(
 ```
 
 ```{r include = F}
-
+tot_chiv <- 14939
 load("dados.RData")
 ```
 
-# RESUMO EXECUTIVO
-
-O presente documento apresenta estudo sobre Distribuição dos estabelecimentos de saúde da atenção especializada à saúde no Brasil: estabelecimentos com leitos de internação.
-Foram considerados como estabelecimentos com leito de internação os hospitais gerais, hospitais especializados, unidades mistas, prontos socorro especializados e prontos socorro gerais, assim tipificados no Sistema Nacional de Cadastro de Estabelecimentos de Saúde em `r format(Sys.Date()-7, '%B de %Y')`.
 
 # INTRODUÇÃO
 
-A conformação e inserção de redes assistenciais no sistema de saúde estabelece a medida da garantia da integralidade da atenção à saúde.
-Operacionalmente, espera-se que os níveis de atenção disponham de cooperação e coordenação com uma gestão eficiente dos recursos de forma a atender tanto as necessidades individuais como coletivas em saúde; e ainda que a oferta de serviços de saúde não seja considerada como um dos principais determinantes da melhoria de saúde, a disposição adequada desses serviços e a garantia do acesso universal da população aos equipamentos de saúde em qualidade e cobertura se configuram como um relevante indicador de bem-estar social[@borrell2006].
-Nessa perspectiva, a Coordenação-Geral de Monitoramento de Indicadores de Serviços na Atenção Especializada à Saúde (CGMIND), considerando suas competências regimentais, propôs-se a identificar a capacidade instalada da média e alta complexidade de saúde.
-Para este fim, a capacidade instalada foi considerada como um conjunto de instituições, públicas e privadas, que ofertam e produzem serviços de saúde ao SUS.
-Assim, em uma primeira etapa, busca-se dimensionar, no território nacional, os estabelecimentos de saúde que estão vinculados ao SUS.
-Para lograr tal feito, optou-se por identificar quais seriam os estabelecimentos que possuíam habilitações de interesse da atenção especializada, compreendendo que uma habilitação declara a **capacidade do estabelecimento de saúde em desenvolver funções específicas exigidas para a realização de determinado procedimento**.
-Essa definição pode não abarcar completamente a compreensão de como o termo "habilitação" vem sendo empregado nas diferentes políticas e programas do Ministério da Saúde.
-A observar que o termo inicialmente empregado pela Norma Operacional Básica -- 1996 assim compreendia habilitação:
+Em seguimento à proposta de 'identificar a capacidade instalada da média e alta complexidade de saúde'[@machado2020], a presente nota técnica aborda a distribuição dos estabelecimentos de saúde com leitos de internação, com foco nos detentores de habilitações ou incentivos do Ministério da Saúde, vigentes em dezembro de 2022, e nos estabelecimentos tipificados como Hospitais Gerais ou Especializados, Prontos-Socorro Gerais ou Especializados e Unidades Mistas.
 
->  *A habilitação dos municípios às diferentes condições de gestão significa a declaração dos compromissos assumidos por parte do gestor perante os outros gestores e perante a população sob sua responsabilidade.*
+A motivação para a análise permanece, qual seja, a de disposição desses serviços, ou capacidade instalada, e a acessibilidade pela população aos equipamentos de saúde, em cobertura e qualidade, constituem indicador de bem-estar social relevante [@borrell2006].
 
-De forma sintética podemos pontuar os seguintes conceitos que vêm sendo atribuídos à palavra “habilitação” nos normativos das políticas e programas no âmbito da SAES:
- - Habilitação para recebimento de incentivo financeiro: que dá o direito ao estabelecimento ou gestor para o recebimento de recursos para execução de uma determinada atividade ou para infraestrutura ou ainda ao cumprir requisitos de qualidade. Exemplo: Serviço de Referência para Diagnóstico e Tratamento de Lesões Precursoras do Câncer do Colo de Útero (SRC), o Serviço de Referência para Diagnóstico de Câncer de Mama (SDM) e Laboratório de citopatologia (Qualicito), Unidade de Cuidados Prolongados (UCP);
- - Habilitação como mecanismo de reconhecimento de um serviço ou de um estabelecimento para desempenho de atividade no SUS. Exemplos: mamografia móvel, Centros de Assistência de Alta Complexidade em Oncologia (CACON) e leitos de Unidade de Terapia Intensiva (UTI); e
- - No âmbito da gestão orçamentária, as habilitações subdividem-se entre as que são destinadas para: custeio do serviço, seja para pagamento por procedimento ou custeio global; para custeio da equipe; para investimento e para incentivo.
+A capacidade instalada considerada em pauta, em linha ao estudo anterior, foi a do conjunto de instituições que ofertam e produzem serviços de saúde para o Sistema Único de Saúde (SUS).
 
-A Portaria SAS/MS nº 414, de 11 de agosto de 2005, que inclui no Sistema do Cadastro Nacional de Saúde – SCNES - as Tabelas de Habilitações de Serviços e de Regras Contratuais define habilitação de serviços como **“o ato do gestor municipal, estadual ou federal autorizar um estabelecimento de saúde já credenciado do SUS a realizar procedimentos constantes das tabelas do SUS, vinculados a normalizações específicas”**.
+Compreende-se que 'uma habilitação declara a **capacidade do estabelecimento de saúde em desenvolver funções específicas exigidas para a realização de determinado procedimento**.'[@machado2020, p.1][^1 Para um repasso de distintas compreensões sobre o termo 'habilitação' usuais no âmbito de programas e políticas do Ministério da Saúde, cf. Machado e Wanderley(2020).] 
+
+Dessa forma, segue-se a compreensão expressa pela Portaria SAS/MS nº 414, de 11 de agosto de 2005 [@brasil2005b], que define habilitação de serviços como **“o ato do gestor municipal, estadual ou federal autorizar um estabelecimento de saúde já credenciado do SUS a realizar procedimentos constantes das tabelas do SUS, vinculados a normalizações específicas”**.
+
+Por questões de escopo, não serão consideradas as características inerentes de cada tipo de estabelecimento bem como a capacidade de resposta em relação a doenças específicas. Logo, o ponto de partida do estudo, das habilitações, oferece um dimensionamento parcial da capacidade de média e alta complexidade vinculada ao SUS.
 
 
-Esta última será a compreensão aplicada ao estudo DISTRIBUIÇÃO DOS ESTABELECIMENTOS DE SAÚDE DA ATENÇÃO ESPECIALIZADA À SAÚDE NO BRASIL VINCULADOS AO SUS. No intuito de se verificar a distribuição dos estabelecimentos da atenção especializada, ter como ponto de partida as habilitações existentes nos estabelecimentos implica dimensionar, ainda que parcialmente, a capacidade da média e alta complexidade. Parcialmente porque uma análise da capacidade instalada deve considerar não somente o tipo de estabelecimentos, que tipicamente na atenção especializada são os hospitais, laboratórios, clinicas de especialidades, etc; mas também considerar as características inerentes de cada tipo de estabelecimento bem como a capacidade de resposta em relação a doenças específicas. Além disso, importa considerar que muitos estabelecimentos de saúde são contratualizados pelos gestores locais e não habilitados pelo Ministério da Saúde. _Esse estudo, portanto, restringir-se-á aos aspectos quantitativos da capacidade instalada em uma única dimensão: tipos de estabelecimentos com habilitações vigentes de interesse da atenção especializada à saúde_.
+Em particular, muitos estabelecimentos de saúde são contratualizados pelos gestores locais e não habilitados pelo Ministério da Saúde. _Esse estudo, portanto, restringir-se-á aos aspectos quantitativos da capacidade instalada em uma única dimensão: tipos de estabelecimentos com habilitações vigentes de interesse da atenção especializada à saúde_. Além do quantitativo de habilitações, incidir-se-á sobre a quantidade de leitos vinculados e não vinculados às mesmas pelos estabelecimentos ora analisados.
 
 A Tabela de Habilitações e a Tabela de Incentivos do SUS é constituída por um total de `r paste(sum(modalidades_h$modalidade),"modalidades:",modalidades_h$modalidades[1],"habilitações e",modalidades_h$modalidades[2],"incentivos")`. Desse universo identificou-se que `r mod_iae$n[1]` habilitações e `r mod_iae$n[2]` incentivos são de interesse da atenção especializada à saúde, conforme apresentado no Anexo 01 – Habilitações e Incentivos da Atenção Especializada. Para identificação dos estabelecimentos e as respectivas habilitações e incentivos a eles vinculados utilizou-se o Sistema Nacional de Cadastro de Estabelecimentos de Saúde (SCNES).
 
 O Cadastro Nacional dos Estabelecimentos de Saúde (CNES) consiste de uma base que contém dados da totalidade dos estabelecimentos de saúde brasileiros. A inclusão de um estabelecimento no CNES  e as informações nele contidas, por meio do preenchimento de diversos formulários específicos, são realizados pelo próprio estabelecimento. Uma vez cadastrado, o Ministério da Saúde gera um código numérico para cada estabelecimento. São os gestores responsáveis por cada instituição responsáveis por atualizar, solicitar alterações ou até mesmo efetuar sua exclusão da base do CNES (ROCHA, 2018).
 
-A presente nota técnica apresenta a distribuição dos estabelecimentos de média e alta complexidade em saúde com leitos de internação.
+A presente nota técnica traz um recorte sobre a distribuição dos estabelecimentos de média e alta complexidade em saúde com leitos de internação.
 
 # METODOLOGIA
-Inicialmente foi criado um banco de dados, a partir do Sistema Nacional de Cadastro de Estabelecimentos de Saúde (SCNES), com a identificação de todos os estabelecimentos que possuíam habilitações vigentes na competência `r datacnes` contendo as seguintes identificações: tipo de estabelecimento, natureza jurídica, UF (nível estadual), número do cadastro, nome do estabelecimento e habilitações e incentivos vigentes (atuais).
-Considerou-se como estabelecimentos que possuem leitos de internação aqueles que possuem atendimento a pacientes que necessitam de assistência direta programada por período superior a 24 horas (pacientes internos), conforme os critérios e parâmetros para o planejamento e programação de ações e serviços de saúde no âmbito do SUS (Portaria de Consolidação GM/MS nº 01/2017): hospital geral, hospital especializado, pronto socorro geral, pronto socorro especializado e unidade mista.
+O presente estudo aproveitou a capacidade acumulada,técnica e institucional, da CGMIND. Foi possível acessar diretamente os bancos de dados de produção do Sistema Nacional de Cadastro de Estabelecimentos de Saúde (SCNES) e demais  com a identificação de todos os estabelecimentos que possuíam habilitações vigentes na competência `r datacnes` , consolidando banco de dados próprio contendo as seguintes identificações: tipo de estabelecimento, natureza jurídica, UF (nível estadual), número do cadastro, nome do estabelecimento e habilitações e incentivos vigentes (atuais), e leitos (SUS e não SUS) existentes, de acordo com tipo de leito. Do ponto de vista técnico, todos os procedimentos, incluída a produção do relatório, foram realizados de maneira completamente reprodutível em software livre R. O projeto com scripts está disponível em repositório aberto[@borges2022c].
+
+Considerou-se como estabelecimentos que possuem leitos de internação aqueles que possuem atendimento a pacientes que necessitam de assistência direta programada por período superior a 24 horas (pacientes internos), conforme os critérios e parâmetros para o planejamento e programação de ações e serviços de saúde no âmbito do SUS (Portaria de Consolidação GM/MS nº 01/2017), particularmente: hospital geral, hospital especializado, pronto socorro geral, pronto socorro especializado e unidade mista.
+
 Para análise da correspondência foram consideradas as informações disponíveis no SCNES, em seu sítio eletrônico http://cnes.datasus.gov.br/ , no que diz respeito aos normativos que criam as habilitações ou incentivos. O conteúdo de cada normativo mencionado no CNES do estabelecimento foi pesquisado utilizando-se preferencialmente as informações disponibilizadas pelo Sistema de Legislação da Saúde
 (SLEGIS) - https://saudelegis.saude.gov.br/. Caso a informação não fosse disponível nessa ferramenta consultou-se buscadores na internet e o Diário Oficial da União (DOU).
-Cumpre esclarecer as definições adotadas nesta Nota Técnica para os estabelecimentos com leitos de internação:
+
+Fizeram-se algumas comparações com as informações obtidas do estudo precedente realizado pela CGMIND.
+
+As definições adotadas nesta Nota Técnica para os estabelecimentos com leitos de internação foram as seguintes:
+
  I. Hospital Geral: hospital destinado à prestação de atendimento nas especialidades básicas, por especialistas e/ou outras especialidades médicas. Pode dispor de serviço de Urgência/Emergência. Deve dispor também de SADT (Serviço de Apoio de Diagnose e Terapia) de média complexidade;
+ 
  II. Hospital Especializado: hospital destinado à prestação de assistência à saúde em uma única especialidade/área. Pode dispor de serviço de Urgência/Emergência e SADT. Podendo ter ou não Alta Complexidade. Geralmente de referência regional, macro regional ou estadual;
+ 
  III. Pronto Socorro Geral: unidade destinada à prestação de assistência a pacientes com ou sem risco de vida, cujos agravos necessitam de atendimento imediato. Pode ter ou não internação. Deve ter as instalações e serviços relacionados à urgência e emergência;
+ 
  IV. Pronto Socorro Especializado: unidade destinada à prestação de assistência em uma ou mais especialidades, a pacientes com ou sem risco de vida, cujos agravos necessitam de atendimento imediato. Deve ter as instalações e serviços relacionados à urgência e emergência;
+ 
  V. Unidade Mista: unidade de saúde básica destinada à prestação de atendimento em atenção básica e integral à saúde, de forma programada ou não, nas especialidades básicas, podendo oferecer assistência odontológica e de outros profissionais, com unidade de internação e sob administração única. A assistência médica deve ser permanente e prestada por médico especialista ou generalista. Pode dispor de urgência/emergência e SADT básico ou de ro na. Uso restrito para estabelecimentos da administração pública.
  
 
 # ANÁLISE
 
-Em `r datacnes`, o SCNES registrava um total de `r fni(total_estabs)` estabelecimentos de saúde em todo território nacional, desses `r fni(tot_chi)` (`r fnx(100*tot_chi/total_estabs)`%) possuíam alguma habilitação ou incentivo vigente pelo Ministério da Saúde: `r fnx(hab_por_nat[1,3])`% da administração pública, `r fnx(hab_por_nat[2,3])`% entidades empresariais e `r fnx(hab_por_nat[3,3])`% entidades sem fins lucrativos.
-Considerando-se somente os estabelecimentos que possuem habilitação ou incentivo de interesse da atenção especializada, listados no Anexo I, este universo se reduz para `r fni(tehab)` estabelecimentos: `r fnx(prop_iae[1,3])`% da administração pública, `r fnx(prop_iae[2,3])`% entidades empresariais e `r fnx(prop_iae[3,3])`% entidades sem fins lucrativos.
+Em `r datacnes`, o SCNES registrava um total de `r fni(total_estabs)` estabelecimentos de saúde em todo território nacional, `r fni(total_estabs-320095)` ou `r fnx(total_estabs/320095-1)`% a mais que em março de 2020. Desses, `r fni(tot_chiv)` (`r fnx(100*tot_chiv/total_estabs)`%) possuíam alguma habilitação ou incentivo vigente pelo Ministério da Saúde: `r fnx(hab_por_nat[1,3])`% da administração pública, `r fnx(hab_por_nat[2,3])`% entidades empresariais e `r fnx(hab_por_nat[3,3])`% entidades sem fins lucrativos.
+Considerando-se somente os estabelecimentos que possuem habilitação ou incentivo de interesse da atenção especializada, listados no Anexo I, este universo se reduz para `r fni(tehab)` estabelecimentos (`r fni(tehab-8.864)` a mais que em março de 2020): `r fnx(prop_iae[1,3])`% da administração pública, `r fnx(prop_iae[2,3])`% entidades empresariais e `r fnx(prop_iae[3,3])`% entidades sem fins lucrativos.
+
 Dentro deste grupo, `r fni(t1tab[8,8])` (`r fnx(100*as.numeric(t1tab[8,8])/tot_chi)`%) estabelecimentos compõem o grupo com leitos de internação.
 O grupo de estabelecimentos com leitos de internação responde por `r fnx(100*as.numeric(t1tab[8,9])/nrow(hi_iae))`% das habilitações e incentivos vigentes de interesse da atenção especializada (`r fni(nrow(hi_iae))`).
 A Tabela 01 detalha, conforme natureza jurídica, a quantidade de estabelecimentos e de habilitações/incentivos vigentes e o Gráfico 01 detalha a distribuição regional conforme natureza jurídica desses estabelecimentos.[@dasilvabarbosa2021]
@@ -111,7 +112,7 @@ A Tabela 01 detalha, conforme natureza jurídica, a quantidade de estabeleciment
 
 ```{r tabela1}
 
-t1tab
+set_number_format(t1tab,-(1:2),-1,fmt_pretty(big.mark = ".", acurracy=0, scientific = FALSE))
 ```
 
 Observa-se que entre os estabelecimentos que possuem leitos de internação: `r fnx(prop_iae$percentual[3])`% são entidades sem fins lucrativos, `r fnx(prop_iae$percentual[1])`% estabelecimentos da administração pública e `r fnx(prop_iae$percentual[2])`% entidades empresariais.
@@ -153,6 +154,7 @@ kable(tab2)
 
 Considerando os resultados acima descritos, uma possibilidade de qualificação do monitoramento dos serviços na atenção especializada é aprofundar a análise da classe A, estabelecendo-a como grupo inicial e prioritário para avaliação e monitoramento considerando as políticas e programas desenvolvidos pela SAES.
 Outra importante análise a ser realizada refere-se ao perfil de habilitação desses estabelecimentos, conforme os grupos acima agregados.
+
 Não menos importante, cabe observar que a classe A predomina nas regiões Sul e Sudeste do país; as classes B e C predominam nas regiões Sudeste e Nordeste , conforme Mapa 02 abaixo.
 
 *Mapa 02* - Distribuição dos estabelecimentos com leitos de internação e proporção das classes por estado - Brasil - `r datacnes`
@@ -185,9 +187,11 @@ kable(tab5)
 
 # CONCLUSÃO
 
-A presente Nota técnica apresenta a distribuição dos estabelecimentos de saúde da atenção especializada com leitos de internação e que possuíam habilitações vigentes em `r datacnes`.
-Observa-se que a concentração de habilitações por unidade federativa tende a se conformar proporcionalmente à oferta de estabelecimentos, de tal sorte que as regiões sudeste e sul concentram maior quantidade de estabelecimentos e de habilitações.
-A presente análise permitiu, ainda, delimitar um grupo prioritário para o monitoramento de serviços na atenção especializada, a saber os 314 estabelecimentos identificados na Classe A. Para esse grupo, será realizada análise mais detalhada das características dos estabelecimentos, das habilitações vigentes e assistência prestada.
+A presente Nota técnica apresentou a distribuição dos estabelecimentos de saúde da atenção especializada com leitos de internação e que possuíam habilitações vigentes em `r datacnes`.
+
+Observa-se que a concentração de habilitações por unidade federativa tende a se conformar proporcionalmente à oferta de estabelecimentos, de tal sorte que as regiões sudeste e sul concentram maior quantidade de estabelecimentos e de habilitações, inclusive com maior densidade de leitos correspondentes em relação à população.
+
+A presente análise permitiu, ainda, delimitar um grupo prioritário para o monitoramento de serviços na atenção especializada, a saber os  `r fni(abc_prop[1,]$qtde_hi)` estabelecimentos identificados na Classe A. Para esse grupo, será realizada análise mais detalhada das características dos estabelecimentos, das habilitações vigentes e assistência prestada.
 
 Todas as análises foram realizadas utilizando o software livre R (version `r paste(R.Version()$major, R.Version()$minor, sep = ".")`) [@R-base].
 Este relatório, incluindo as tabelas foi gerado utilizando os pacotes 'bookdown' (version `r packageVersion("bookdown")`) [@R-bookdown], 'rmarkdown' (version `r packageVersion("rmarkdown")`) [@R-rmarkdown], e 'knitr' (version `r packageVersion("knitr")`) [@R-knitr].

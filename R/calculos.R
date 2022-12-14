@@ -35,9 +35,9 @@ dfdg1 <- dbConnect(odbc::odbc(), "DfDG1", timeout = 10)
 
 cnesvalidos <- dbGetQuery(con_pd,'select * from CNES.TB_ESTABELECIMENTO WHERE co_motivo_desab is null')
 
-cnesvalidos <- cnesvalidos %>% mutate(across(c(CO_CNES,CO_NATUREZA_JUR,TP_UNIDADE),as.numeric))
+cnesvalidos <- cnesvalidos %>% mutate(across(c(CO_CNES,CO_NATUREZA_JUR,TP_UNIDADE,CO_UNIDADE),as.numeric))
 
-saveRDS(cnesvalidos,cnesv)
+#saveRDS(cnesvalidos,cnesv)
 
 
 #cnes_nj <- cnes_nj%>%mutate(across(.cols = everything(), as.numeric))
@@ -53,15 +53,56 @@ saveRDS(cnesvalidos,cnesv)
 
 #cnesvalidos%<>%inner_join(tipos_nj, by = c("CO_NATUREZA_JUR" = "CO_NATUREZA_JURIDICA_CONCLA"))
 
-######REFAZER
-cnesvalidos%<>%mutate(natureza = case_when(
-  grepl("^1",CO_NATUREZA_JUR) ~ "Administração Pública",
-  grepl("^3",CO_NATUREZA_JUR) ~ "Entidades Sem Fins Lucrativos",
-  T ~ "Entidades Empresariais"
-))
+#leitos
+rl_estab_complementar <- dbGetQuery(con_pd,"select a.CO_UNIDADE, a.CO_LEITO,
+                                    a.QT_EXIST,a.QT_CONTR,a.QT_SUS,a.DT_CMTP_INICIO, DT_CMTP_FIM from CNES.RL_ESTAB_COMPLEMENTAR a WHERE DT_CMTP_FIM > sysdate")
 
-###Unidades Mistas, Hospitais Gerais, Hosp Esp, PS Geral, PS Especializado
-cl_por_nat <- cnesvalidos%>%dplyr::filter(TP_UNIDADE %in% c(5,7,15,20,21))%>%count(natureza)
+tipos_de_leito <-  dbGetQuery(con_pd,"select CO_LEITO,DS_LEITO,TP_LEITO from NACIONAL.TB_LEITO")
+
+tipos_de_leito$CO_LEITO <- as.numeric(tipos_de_leito$CO_LEITO)
+
+tipos_de_leito$TP_LEITO <- as.numeric(tipos_de_leito$TP_LEITO)
+
+tipos_de_leito$DS_LEITO <- str_to_title(tipos_de_leito$DS_LEITO)
+
+rl_estab_complementar$CO_LEITO <- as.numeric(rl_estab_complementar$CO_LEITO)
+
+rl_estab_complementar$CO_LEITO <- as.numeric(rl_estab_complementar$CO_UNIDADE)
+
+rl_estab_complementar%<>%left_join(tipos_de_leito)
+
+rl_estab_complementar%<>%filter(CO_UNIDADE %in% unique(cnesvalidos$CO_UNIDADE))
+
+rl_estab_complementar <- rl_estab_complementar%>%arrange(DT_CMTP_INICIO)%>%group_by(CO_UNIDADE,DS_LEITO)%>%
+  summarize(across(contains("QT"),sum,na.rm=T),across(-contains("QT"),first))
+
+rl_estab_complementar%<>%
+  ungroup()%>%select(CO_UNIDADE,contains("QT"),DS_LEITO)%>%
+  pivot_longer(cols=contains("QT"),names_to = "qt_leito_tipo",values_to = "qt_leitos")
+
+rl_estab_complementar%<>%
+  pivot_wider(names_from = c(qt_leito_tipo,DS_LEITO),values_from = "qt_leitos")
+
+rl_estab_complementar%<>%
+  mutate(QT_EXIST = rowSums(across(contains("QT_EXIST")),na.rm = T),
+         QT_SUS = rowSums(across(contains("QT_SUS")),na.rm = T),
+         QT_CONTR = rowSums(across(contains("QT_CONTR")),na.rm = T))
+
+rl_estab_complementar[is.na(rl_estab_complementar)] <- 0
+
+######REFAZER
+cnesvalidos%<>%left_join(rl_estab_complementar,by="CO_UNIDADE")
+
+cnesvalidos %<>%  mutate(natureza = case_when(
+    grepl("^1",CO_NATUREZA_JUR) ~ "Administração Pública",
+    grepl("^3",CO_NATUREZA_JUR) ~ "Entidades Sem Fins Lucrativos",
+    grepl("^[24]",CO_NATUREZA_JUR) ~ "Entidades Empresariais",
+    QT_EXIST > 0 ~ "Outros Estabelecimentos com leitos de internação",
+    T ~ "sem informação"
+  ))
+
+###Unidades Mistas, Hospitais Gerais, Hosp Esp, PS Geral, PS Especializado -- retirado %>%dplyr::filter(TP_UNIDADE %in% c(5,7,15,20,21))
+cl_por_nat <- cnesvalidos%>%count(natureza)
 
 cl_por_nat$percentual <- 100*prop.table(cl_por_nat$n)
 
@@ -76,30 +117,66 @@ hab_e_inc <- dbGetQuery(con_pd,"SELECT * FROM CNES.RL_ESTAB_SIPAC")
 
 hab_e_inc%<>%mutate(across(contains("CMTP"),compdata))
 
+todo_tipo_hic <- hab_e_inc %>%dplyr::filter( (is.na(CMTP_FIM) | CMTP_FIM> Sys.Date()))
 hab_e_inc %<>%dplyr::filter( TP_HABILITACAO %in% c("H","I") & (is.na(CMTP_FIM) | CMTP_FIM> Sys.Date()))
 
 
 hab_e_inc$CO_CNES <- as.numeric(hab_e_inc$CO_CNES)
 
+hab_e_inc$CO_UNIDADE <- as.numeric(hab_e_inc$CO_UNIDADE)
+
+hab_e_inc %<>% filter(CO_UNIDADE %in% cnesvalidos$CO_UNIDADE)
 
 datacnes <- format.Date(Sys.Date(),"%B de %Y")
 
 total_estabs <- length(unique(cnesvalidos$CO_CNES))
 
-com_hab_inc <- unique(hab_e_inc$CO_CNES)
+com_hab_inc_qqer_tipo <- unique(todo_tipo_hic$CO_CNES)
 
-tot_chi <- length(com_hab_inc)
+
+unid_hi_qqer_tipo <- unique(todo_tipo_hic$CO_UNIDADE)
+
+tot_chi <- length(com_hab_inc_qqer_tipo)
 
 
 
 hab_e_inc$iae <- case_when(hab_e_inc$COD_SUB_GRUPO_HABILITACAO %in% anx$CÓDIGO ~ T,
                            T ~ F)
 
-hab_por_cnes <- hab_e_inc%>%group_by(CO_CNES)%>%summarize(habs_incs = n(), leitos=sum(NU_LEITOS,na.rm=T))
+##Harmonização com nomes internos ao BD CNES RL_ESTAB_SIPAC
+# names(hab_e_inc)[c(4:6,9,11)] <-
+#   c("CMTP_INICIO","CMTP_FIM","NU_LEITOS","COD_SUB_GRUPO_HABILITACAO","TP_HABILITACAO")
 
-hab_por_cnes <- hab_por_cnes%>%inner_join(cnesvalidos)
+saveRDS(hab_e_inc,paste0("dados/",Sys.Date(),"-hab_e_inc.rds"))
 
 
+
+hab_e_inc%<>%left_join(rl_estab_complementar,by = "CO_UNIDADE")
+
+#leitos
+
+hab_por_cnes <- hab_e_inc%>%group_by(CO_UNIDADE)%>%summarize(habs_incs = n(), leitos_hi=sum(NU_LEITOS,na.rm=T),leitos_exist=max(QT_EXIST,na.rm=T),
+                                                             leitos_SUS=max(QT_SUS,na.rm=T))
+
+
+hab_por_cnes[hab_por_cnes==-Inf] <- 0
+###Averiguação sobre cnes inválidos com habilitações de iae
+#hab_por_cnes_inv <- hab_por_cnes%>%left_join(cnesvalidos) #%>%filter(is.na(natureza))
+#cnesinvalidos_com_hab <- dbGetQuery(con_pd,paste("select * from CNES.TB_ESTABELECIMENTO WHERE CO_UNIDADE IN('",paste0(unique(hab_por_cnes_inv$CO_UNIDADE),collapse="','"),"')"))
+
+
+
+#cnes_nao_no_db <- hab_por_cnes_inv[!(hab_por_cnes_inv$CO_CNES %in% cnesinvalidos_com_hab$CO_CNES),]
+
+#cnes_nao_no_db%<>%select(1:3)
+
+#hab_por_cnes_inv%>%count(CO_CNES %in% cnesinvalidos_com_hab$CO_CNES)%>%rename(`CNES existente invalidado` = 1)
+
+#write_csv2(cnes_nao_no_db,"resultados/cods_cnes_com_habs_sem_constar_na_tb_estabelecimento.csv")
+
+hab_por_cnes <- hab_por_cnes%>%inner_join(cnesvalidos%>%select(-contains("QT")))
+
+tot_chiv <- nrow(hab_por_cnes)
 
 hab_por_nat <- hab_por_cnes%>%count(natureza)
 
@@ -107,20 +184,22 @@ hab_por_nat$percentual <- 100*prop.table(hab_por_nat$n)
 
 hab_nat_det <- hab_por_cnes%>%count(CO_NATUREZA_JUR,ST_ADESAO_FILANTROP)
 
-hi_iae <- hab_e_inc[hab_e_inc$iae ==T & hab_e_inc$CO_CNES %in% cnesvalidos$CO_CNES,]
+hi_iae <- hab_por_cnes[hab_por_cnes$CO_UNIDADE %in% hab_e_inc[hab_e_inc$iae == T,]$CO_UNIDADE &
+                         hab_por_cnes$CO_UNIDADE %in% cnesvalidos$CO_UNIDADE,]
 
-est_iae <- data.frame("CO_CNES" = unique(hi_iae$CO_CNES))
+est_iae <- data.frame("CO_UNIDADE" = unique(hi_iae$CO_UNIDADE))
 tehab <- nrow(est_iae)
 
 
 
-est_iae %<>%left_join(cnesvalidos, by = "CO_CNES")
+est_iae %<>%left_join(cnesvalidos, by = "CO_UNIDADE")
 
 #CLIMEP desativado em setembro
 #est_iae[is.na(est_iae$CO_MUNICIPIO_GESTOR),]$CO_MUNICIPIO_GESTOR <- 330490
 
 
-prop_iae <- est_iae%>%group_by(CO_CNES)%>%summarize(natureza = first(natureza))%>%
+
+prop_iae <- est_iae%>%group_by(CO_UNIDADE)%>%summarize(natureza = first(natureza))%>%
   count(natureza)%>%mutate(percentual = 100*prop.table(n))
 
 
@@ -133,21 +212,28 @@ names(est_iae)[match("microrregiao.mesorregiao.UF.id",names(est_iae))] <- "n_UF"
 pop_estadual$n_UF <- as.numeric(pop_estadual$n_UF)
 est_iae%<>%left_join(pop_estadual, by = "n_UF")
 
-est_iae%<>%left_join(hab_por_cnes[c("CO_CNES","habs_incs")])
+est_iae%<>%left_join(hab_por_cnes[c("CO_UNIDADE","habs_incs")])
 
 
 
 iae_uf <- est_iae%>%
-  left_join(hab_e_inc%>%select(CO_CNES,NU_LEITOS))%>%group_by(UF)%>%summarize(
+  left_join(hab_e_inc%>%group_by(CO_UNIDADE)%>%summarize(NU_LEITOS=sum(NU_LEITOS,na.rm=T)))%>%
+  group_by(UF)%>%
+  summarize(
   n_estabs = n(),
-  n_leitos = sum(NU_LEITOS,na.rm = T),
-  pop = first(Total),
-  `Estabelecimentos por 1.000 habitantes` = n_estabs*1e3/pop,
-  `Leitos por 1.000 habitantes` = n_leitos*1e3/pop,
+  leitos_hi = sum(NU_LEITOS,na.rm = T),
+  leitos_existentes = sum(QT_EXIST,na.rm = T),
+  leitos_sus = sum(QT_SUS,na.rm = T),
   n_habs = sum(habs_incs,na.rm = T),
-  UF = first(UF))%>%mutate(
-    bordab = 20*n_habs/sum(n_habs),
-    `Habilitações por estabelecimento` = n_habs/n_estabs
+  UF = first(UF),
+  pop = first(Total))%>%
+  mutate(
+  `Estabelecimentos por 1.000 hab.` = n_estabs*1e3/pop,
+  `Leitos por 1.000 hab.` = leitos_existentes*1e3/pop,
+  `Leitos SUS por 1.000 hab.` = leitos_sus*1e3/pop,
+  `Leitos com h/i por 1.000 hab.` = leitos_hi*1e3/pop,
+    bordab = 30*(n_habs/sum(n_habs)+0.02),
+    `Habilitações/estab.` = n_habs/n_estabs
   )
 
 iae_uf$UF <- str_to_title(iae_uf$UF)
@@ -155,20 +241,21 @@ iae_uf$UF <- str_to_title(iae_uf$UF)
 iae_uf <- mapag %>%left_join(iae_uf, by = c("name_state" = "UF"))
 
 
-iae_uf$fx_cor <- cut(iae_uf$`Estabelecimentos por 1.000 habitantes`,c(0,2,4,6,8,10))
+iae_uf$fx_cor <- cut(iae_uf$`Estabelecimentos por 1.000 hab.`,c(0,2,4,6,8,10))
 mapa1 <-  autoplot.OpenStreetMap(brbasemap)+
   ggspatial::annotation_map_tile()+
-  geom_sf(data = iae_uf,inherit.aes = F , aes(fill = `Leitos por 1.000 habitantes`), alpha = 0.5)+
-  scale_fill_gradientn(colours = paleta5, limits = c(0,max(iae_uf$`Leitos por 1.000 habitantes`)))+
+  geom_sf(data = iae_uf,inherit.aes = F , aes(fill = `Leitos por 1.000 hab.`), alpha = 0.5)+
+  scale_fill_gradientn(colours = paleta5, limits = c(0,max(iae_uf$`Leitos por 1.000 hab.`)))+
   geom_sf(data = sf::st_centroid(iae_uf),
-          inherit.aes = F , aes(size = 1.4*bordab),
+          inherit.aes = F , size = 2.4*iae_uf$bordab,
           color = "black", legend.position ="none", show.legend = F)+
-  guides(size=F)+
+#  guides(size=F)+
   geom_sf(data = sf::st_centroid(iae_uf),
-          inherit.aes = F , aes(color = `Habilitações por estabelecimento` , size = bordab))+
+          inherit.aes = F , aes(color = `Habilitações/estab.`) , size = 2*iae_uf$bordab)+
   scale_color_distiller(palette = "Spectral")+
   #  scale_fill_gradientn(colours = paleta3, limits = c(0,10))+
   theme_minimal()+theme(axis.text = element_blank(),axis.title = element_blank(),
+                        legend.text = element_text(size=unit(8,"points")),
                         legend.position = "bottom")
 
 
@@ -176,6 +263,12 @@ prop_iae_rg <- est_iae%>%group_by(regiao.imediata.regiao.intermediaria.UF.regiao
   count(natureza)%>%mutate(percentual = 100*prop.table(n))
 
 names(prop_iae_rg)[1] <- "Região"
+
+prop_iae_rg$natureza <- as.factor(prop_iae_rg$natureza)
+
+levels(prop_iae_rg$natureza) <-  c("Administração\nPública",
+                                   "Entidades\nEmpresariais",
+                                   "Entidades s/fins\nLucrativos")
 
 piaergraf <- ggplot(prop_iae_rg,aes(x = `Região`, y = n, fill = natureza))+
   geom_bar(aes(y=n),stat = "identity",position= position_dodge2(preserve = "single",width = 2))+scale_fill_manual(values=paleta7[seq(1,13,by = 2)])+
@@ -188,17 +281,19 @@ piaergraf <- ggplot(prop_iae_rg,aes(x = `Região`, y = n, fill = natureza))+
 
 
 
-hab_cnesiae <- hi_iae%>%
-  left_join(est_iae, by = "CO_CNES")%>%
-  group_by(CO_CNES)%>%
-  summarize(habs_incs = n(),
-            natureza = first(natureza),
-            TP_UNIDADE = first(TP_UNIDADE))
+hab_cnesiae <- est_iae
+
+# %>%
+#   group_by(CO_UNIDADE)%>%
+#   summarize(habs_incs = sum(habs_incs),
+#             natureza = dplyr::first(natureza),
+#             TP_UNIDADE = dplyr::first(TP_UNIDADE))
 
 ##IAE = Interesse da atenção especializada
 ##Tab 1 **COM IAE**
 hab_nat_leito <- hab_cnesiae%>%
-  dplyr::filter(TP_UNIDADE %in% tp_unidade_cl$co_tipo_unidade)%>%
+#  dplyr::filter(TP_UNIDADE %in% tp_unidade_cl$co_tipo_unidade)%>%
+  dplyr::filter(QT_EXIST > 0)%>%
   left_join(tp_unidade_cl, by = c("TP_UNIDADE" = "co_tipo_unidade"))%>%
   rename(`Tipo de Estabelecimento` = ds_tipo_unidade)
 
@@ -257,20 +352,20 @@ tab2 <- hab_nat_leito%>%
   summarize(quantidade=n())%>%
   pivot_wider(names_from = classe, values_from = quantidade)
 
-tab2[is.na(tab2)] <- 0
+#tab2[is.na(tab2)] <- 0
 
 
 
 ####Tabela 3
 
 tab3 <- hab_nat_leito%>%
-  inner_join(cnesvalidos%>%select(CO_CNES,CO_MUNICIPIO_GESTOR),
-            by = "CO_CNES")%>%
-  left_join(br_mun%>%
-              select(idt,
-                     UF = microrregiao.mesorregiao.UF.nome ,
-                     `Região` = microrregiao.mesorregiao.UF.regiao.nome),
-            by = c("CO_MUNICIPIO_GESTOR" = "idt"))%>%
+  inner_join(cnesvalidos%>%select(CO_UNIDADE))%>%
+  # left_join(br_mun%>%
+  #             select(idt,
+  #                    UF = microrregiao.mesorregiao.UF.nome ,
+  #                    `Região` = microrregiao.mesorregiao.UF.regiao.nome),
+  #           by = c("CO_MUNICIPIO_GESTOR" = "idt"))%>%
+  rename(Região = microrregiao.mesorregiao.UF.regiao.nome)%>%
   group_by(Região,UF,classe)%>%
   summarize(quantidade=n())
 
@@ -304,13 +399,13 @@ tab3[is.na(tab3)] <- 0
 ####Tabela 4
 
 tab4 <- hab_nat_leito%>%
-  left_join(cnesvalidos%>%select(CO_CNES,CO_MUNICIPIO_GESTOR),
-            by= "CO_CNES")%>%
-  left_join(br_mun%>%
-              select(idt,
-                     UF = microrregiao.mesorregiao.UF.nome ,
-                     `Região` = microrregiao.mesorregiao.UF.regiao.nome),
-            by = c("CO_MUNICIPIO_GESTOR" = "idt"))%>%
+  left_join(cnesvalidos%>%select(CO_UNIDADE))%>%
+  rename(Região = microrregiao.mesorregiao.UF.regiao.nome)%>%
+    # left_join(br_mun%>%
+  #             select(idt,
+  #                    UF = microrregiao.mesorregiao.UF.nome ,
+  #                    `Região` = microrregiao.mesorregiao.UF.regiao.nome),
+  #           by = c("CO_MUNICIPIO_GESTOR" = "idt"))%>%
   group_by(Região,UF,`Tipo de Estabelecimento`)%>%
   summarize(quantidade=n())
 
@@ -345,12 +440,8 @@ tab4[is.na(tab4)] <- 0
 ####Tabela 5
 
 tab5 <- hab_nat_leito%>%
-  left_join(cnesvalidos%>%select(CO_CNES,CO_MUNICIPIO_GESTOR),
-            by= "CO_CNES")%>%
-  left_join(br_mun%>%
-              select(idt,UF = microrregiao.mesorregiao.UF.nome ,
-                     `Região` = microrregiao.mesorregiao.UF.regiao.nome),
-            by = c("CO_MUNICIPIO_GESTOR" = "idt"))%>%
+  left_join(cnesvalidos%>%select(CO_UNIDADE))%>%
+  rename(Região = microrregiao.mesorregiao.UF.regiao.nome)%>%
   group_by(Região,UF,`natureza`)%>%
   summarize(quantidade=n())
 
@@ -398,9 +489,10 @@ hab_por_nat_com_leito <- bind_rows(hab_por_nat_com_leito,totais_sem_nat)
 tab1 <- hab_por_nat_com_leito%>%
   pivot_longer(-1:-2,"qtd",values_to="valor")%>%
   pivot_wider(names_from = c(natureza,qtd),values_from = "valor", names_sep="\n")
+
 tab1[is.na(tab1)] <- 0
 
-totais <- data.frame("Tipo de Estabelecimento"="Total",t(colSums(tab1[-1])))
+totais <- data.frame("Tipo de Estabelecimento"="Total",t(colSums(tab1[-1],na.rm = T)))
 
 tab1[nrow(tab1)+1,] <- totais
 
@@ -455,12 +547,12 @@ sipp$total = rowSums(sipp[1:3])
 
 sipp$tam =  ((sipp$total-min(sipp$total))/max(sipp$total))+0.5
 
-mapa2base_col <- geobr::read_state()%>%left_join(st_drop_geometry(iae_uf[c("code_state","Leitos por 1.000 habitantes")]))
+mapa2base_col <- geobr::read_state()%>%left_join(st_drop_geometry(iae_uf[c("code_state","Leitos por 1.000 hab.")]))
 
-#mapa2base_col$`Leitos por mil habitantes` <- cut(mapa2base_col$`Leitos por 1.000 habitantes`,c(0,2,4,6,8,10))
+#mapa2base_col$`Leitos por mil habitantes` <- cut(mapa2base_col$`Leitos por 1.000 hab.`,c(0,2,4,6,8,10))
 
 mapa2 <- ggplot(mapa2base_col)+
-  geom_sf(aes(fill=`Leitos por 1.000 habitantes`))+
+  geom_sf(aes(fill=`Leitos por 1.000 hab.`))+
   labs(fill = "Leitos*/1.000 hab")+
   scale_fill_gradientn(colors = rev(paleta2[-length(paleta2)]),labels = scales::number_format(big.mark = ".",decimal.mark=",",acurracy = 0.01))+
   # geom_sf(data = iae_uf,inherit.aes = F ,

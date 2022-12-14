@@ -87,8 +87,4 @@ hab_e_inc$CompetênciaFinal <- as.Date(paste0("15/",hab_e_inc$CompetênciaInicia
 hab_e_inc$hab_ref <- as.numeric(hab_e_inc$hab_ref)
 
 
-##Harmonização com nomes internos ao BD CNES RL_ESTAB_SIPAC
-names(hab_e_inc)[c(4:6,9,11)] <-
-  c("CMTP_INICIO","CMTP_FIM","NU_LEITOS","COD_SUB_GRUPO_HABILITACAO","TP_HABILITACAO")
 
-saveRDS(hab_e_inc,paste0("dados/",Sys.Date(),"-hab_e_inc.rds"))
